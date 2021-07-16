@@ -9,7 +9,7 @@ export interface Products extends Document {
   price: number;
 }
 
-export const products = new Schema<Products>({
+export const ProductSchema = new Schema<Products>({
   _id: Types.ObjectId,
   brand: String,
   description: String,

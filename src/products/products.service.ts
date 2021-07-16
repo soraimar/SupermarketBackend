@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PRODUCTS_MODEL } from './products.providers';
 import { Model } from 'mongoose';
-import { Products } from './schemas/products.schema';
+import { Products } from './schemas/productSchema';
 
 @Injectable()
 export class ProductsService {

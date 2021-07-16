@@ -14,8 +14,7 @@ export class ProductsController {
 
   @Get()
   async findAll() {
-    let algo = await this.productsService.findAll();
-    return algo;
+    return await this.productsService.findAll();
   }
 
   @Get(':id')
