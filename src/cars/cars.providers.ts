@@ -4,7 +4,7 @@ import { DATABASE_CONNECTION } from '../database/database.providers';
 
 export const CARS_MODEL = 'CARS_MODEL';
 
-export const ProductsProviders = [
+export const CarsProviders = [
   {
     provide: CARS_MODEL,
     useFactory: (connection: Connection) =>

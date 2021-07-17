@@ -1,5 +1,5 @@
 import { Schema, Types, Document } from 'mongoose';
-import { ProductSchema, Products } from "../../products/schemas/productSchema";
+import { ProductSchema, Products } from '../../products/schemas/productSchema';
 
 export interface Cars extends Document {
   id: Types.ObjectId;

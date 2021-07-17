@@ -4,6 +4,7 @@ import { UpdateCarDto } from './dto/update-car.dto';
 import { Model } from "mongoose";
 import { CARS_MODEL } from "./cars.providers";
 import { Cars } from "./schemas/carsSchema";
+import { Products } from "../products/schemas/productSchema";
 
 
 @Injectable()
@@ -21,8 +22,8 @@ export class CarsService {
     return this.carsModel.findOne({ id }).exec();
   }
 
-  update(id: number, updateCarDto: UpdateCarDto) {
-    return `This action updates a #${id} car`;
+  async update(id: string, products: Products[]) {
+    return this.carsModel.updateOne({ _id: id }, { products }).exec();
   }
 
   remove(id: number) {

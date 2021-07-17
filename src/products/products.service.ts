@@ -32,4 +32,12 @@ export class ProductsService {
   remove(id: number) {
     return `This action removes a #${id} product`;
   }
+
+  async findProducts(products: [string]) {
+    return this.productsModel.find({
+      _id: {
+        $in: products,
+      },
+    });
+  }
 }
