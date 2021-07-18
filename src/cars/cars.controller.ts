@@ -5,7 +5,9 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  Put,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
@@ -37,8 +39,23 @@ export class CarsController {
     return await this.carsService.update(id, product);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.carsService.remove(+id);
+  @Put('add_product/:id')
+  async updateCars(
+    @Param('id') id: string,
+    @Body() updateCarDto: UpdateCarDto,
+  ) {
+    const product = await this.productService.findProducts(
+      updateCarDto.products,
+    );
+
+    if (!product)
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+
+    const car = await this.carsService.findOne(id);
+    if (!car) throw new HttpException('Car not found', HttpStatus.NOT_FOUND);
+    car.products.push(product[0]);
+
+    await this.carsService.update(id, car.products);
+    return car;
   }
 }
