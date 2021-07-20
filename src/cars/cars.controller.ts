@@ -58,4 +58,29 @@ export class CarsController {
     await this.carsService.update(id, car.products);
     return car;
   }
+
+  @Put('delete_product/:id')
+  async remobeProductCar(
+    @Param('id') id: string,
+    @Body() updateCarDto: UpdateCarDto,
+  ) {
+    const car = await this.carsService.findOne(id);
+    if (!car) throw new HttpException('Car not found', HttpStatus.NOT_FOUND);
+
+    let found = false;
+    const newProducts = [];
+    for (let x = 0; x < car.products.length; x++) {
+      const product = car.products[x];
+      if (!found && product._id.toString() != updateCarDto.products[0]) {
+        found = true;
+        continue;
+      }
+      newProducts.push(product);
+    }
+
+    car.products = newProducts;
+
+    await this.carsService.update(id, car.products);
+    return car;
+  }
 }

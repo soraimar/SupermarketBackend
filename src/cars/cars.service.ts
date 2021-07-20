@@ -23,5 +23,4 @@ export class CarsService {
   async update(id: string, products: Products[]) {
     return this.carsModel.updateOne({ _id: id }, { products }).exec();
   }
-
 }
