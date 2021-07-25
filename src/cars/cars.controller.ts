@@ -28,7 +28,29 @@ export class CarsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.carsService.findOne(id);
+    const car = await this.carsService.findOne(id);
+
+    if (!car) throw new HttpException('Car not found', HttpStatus.NOT_FOUND);
+
+    const agrupacionProductos = {};
+    for (let x = 0; x < car.products.length; x++) {
+      const product = car.products[x];
+      const price = car.products[x].price;
+
+      if (!agrupacionProductos[product.id]) {
+        agrupacionProductos[product.id] = product;
+        agrupacionProductos[product.id]._doc.cantidad = 1;
+        agrupacionProductos[product.id]._doc.total = price;
+      } else {
+        agrupacionProductos[product.id]._doc.cantidad++;
+        agrupacionProductos[product.id]._doc.total =
+          agrupacionProductos[product.id]._doc.total + price;
+      }
+    }
+    car.products = Object.keys(agrupacionProductos).map(
+      (key) => agrupacionProductos[key],
+    );
+    return car;
   }
 
   @Patch(':id')
