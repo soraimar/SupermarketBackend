@@ -22,6 +22,6 @@ $ npm run start
 ```
 
 # Request
-[ Colecciónn postman](https://www.getpostman.com/collections/8ac821f86664065d633f)
+[ Collection postman](https://www.getpostman.com/collections/8ac821f86664065d633f)
 
 
