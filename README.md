@@ -1,8 +1,8 @@
-#Shopping-car
+# Shopping-car
 
 CRUD carrito de compras implementado en ecommerce Walmart
 
-#Technologies
+# Technologies
 * [MongoDB](https://github.com/walmartdigital/brand-discounts-db)
 * [Nestjs](https://nestjs.com/)
 
