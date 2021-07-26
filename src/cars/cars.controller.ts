@@ -13,12 +13,15 @@ import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { ProductsService } from '../products/products.service';
+import { DiscountsService } from '../discounts/discounts.service';
+import { Discounts } from '../discounts/schemas/discountSchema';
 
 @Controller('cars')
 export class CarsController {
   constructor(
     private readonly carsService: CarsService,
     private readonly productService: ProductsService,
+    private readonly discountService: DiscountsService,
   ) {}
 
   @Post()
@@ -28,9 +31,12 @@ export class CarsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const car = await this.carsService.findOne(id);
+    const mongooseCar = await this.carsService.findOne(id);
 
-    if (!car) throw new HttpException('Car not found', HttpStatus.NOT_FOUND);
+    if (!mongooseCar)
+      throw new HttpException('Car not found', HttpStatus.NOT_FOUND);
+
+    const car = mongooseCar.toJSON();
 
     const agrupacionProductos = {};
     for (let x = 0; x < car.products.length; x++) {
@@ -39,18 +45,78 @@ export class CarsController {
 
       if (!agrupacionProductos[product.id]) {
         agrupacionProductos[product.id] = product;
-        agrupacionProductos[product.id]._doc.cantidad = 1;
-        agrupacionProductos[product.id]._doc.total = price;
+        agrupacionProductos[product.id].quantity = 1;
+        agrupacionProductos[product.id].total = price;
       } else {
-        agrupacionProductos[product.id]._doc.cantidad++;
-        agrupacionProductos[product.id]._doc.total =
-          agrupacionProductos[product.id]._doc.total + price;
+        agrupacionProductos[product.id].quantity++;
+        agrupacionProductos[product.id].total =
+          agrupacionProductos[product.id].total + price;
       }
     }
+
     car.products = Object.keys(agrupacionProductos).map(
       (key) => agrupacionProductos[key],
     );
+
+    const totalByBrand = {};
+    for (let i = 0; i < car.products.length; i++) {
+      const product = car.products[i];
+      if (!totalByBrand[product.brand]) {
+        totalByBrand[product.brand] = product.price;
+      } else {
+        totalByBrand[product.brand] += product.price;
+      }
+    }
+
+    const discount = await this.discountService.findByBrand(
+      Object.keys(totalByBrand),
+    );
+
+    const mapDiscount = {};
+    discount.forEach((value) => {
+      mapDiscount[value.brand] = value;
+    });
+
+    let biggerDiscount: Discounts;
+    let betterDiscount: Discounts;
+
+    Object.keys(totalByBrand).forEach((brand) => {
+      const total = totalByBrand[brand];
+      const currentDiscountBrand = mapDiscount[brand];
+      if (
+        total > currentDiscountBrand.threshold &&
+        CarsController.isBiggerDiscount(currentDiscountBrand, biggerDiscount)
+      ) {
+        biggerDiscount = currentDiscountBrand;
+      } else if (
+        total < currentDiscountBrand.threshold &&
+        CarsController.isBetterDiscount(
+          betterDiscount,
+          currentDiscountBrand &&
+            (!biggerDiscount ||
+              currentDiscountBrand.discount > biggerDiscount.discount),
+        )
+      ) {
+        betterDiscount = currentDiscountBrand;
+      }
+    });
+
+    car.betterDiscount = betterDiscount;
+    car.biggerDiscount = biggerDiscount;
     return car;
+  }
+
+  private static isBiggerDiscount(currentDiscountBrand, biggerDiscount) {
+    return (
+      !biggerDiscount || currentDiscountBrand.discount < biggerDiscount.discount
+    );
+  }
+
+  private static isBetterDiscount(currentDiscountBrand, betterDiscount) {
+    return (
+      !currentDiscountBrand ||
+      currentDiscountBrand.discount < betterDiscount.discount
+    );
   }
 
   @Patch(':id')

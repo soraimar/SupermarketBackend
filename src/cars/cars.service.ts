@@ -20,6 +20,10 @@ export class CarsService {
     return this.carsModel.findOne({ _id: id }).exec();
   }
 
+  async findAll(id: string) {
+    return this.carsModel.findOne({ _id: id }).exec();
+  }
+
   async update(id: string, products: Products[]) {
     return this.carsModel.updateOne({ _id: id }, { products }).exec();
   }
