@@ -1,7 +1,6 @@
 import { Schema, Types, Document } from 'mongoose';
 
 export interface Products extends Document {
-  descuento: string;
   _id: Types.ObjectId;
   brand: string;
   description: string;

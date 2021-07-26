@@ -1,9 +1,6 @@
 import { Schema, Types, Document } from 'mongoose';
 import { Products, ProductSchema } from '../../products/schemas/productSchema';
-import {
-  Discounts,
-  DiscountSchema,
-} from '../../discounts/schemas/discountSchema';
+import { DiscountSchema } from '../../discounts/schemas/discountSchema';
 
 export interface Cars extends Document {
   id: Types.ObjectId;
