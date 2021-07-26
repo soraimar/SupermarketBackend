@@ -1,6 +1,6 @@
 #Shopping-car
 
-CRUD de carrito de compras implementado en tienda Walmart
+CRUD carrito de compras implementado en ecommerce Walmart
 
 #Technologies
 * [MongoDB](https://github.com/walmartdigital/brand-discounts-db)
